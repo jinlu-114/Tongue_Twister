@@ -10,11 +10,19 @@ What started as an experiment in image classification eventually became an oppor
 
 **Disclaimer:** This is an educational project, not a clinically validated diagnostic tool. Its predictions should not be used for medical decisions!!!
 
+## Background & Motivation
+
+Tongue Twister began during a period of uncertainty in my own life, when I was informed of a potential mass in my tongue. The experience sparked my curiosity about medical imaging and how machine learning could be used to identify abnormalities that might otherwise be difficult to detect.
+
+What started as a personal curiosity became my introduction to image classification and deep learning. I began experimenting with PyTorch, exploring how neural networks could learn patterns from medical images and how to evaluate whether their predictions were actually reliable.
+
+This repository presents a refined and documented version of those initial experiments, incorporating improvements to the training pipeline, model evaluation, and reproducibility. While Tongue Twister is an exploratory learning project rather than a clinical diagnostic tool, it represents my first steps toward understanding how computation can contribute to biomedical research.
+
 ## Research Question
 
 How does model architecture affect oral cancer image classification performance when training data is limited?
 
-I compared two pretrained convolutional neural networks, ResNet18 and ResNet50, to investigate whether a deeper architecture necessarily produces better results.
+Two pretrained convolutional neural networks, ResNet18 and ResNet50, were investigated to determine whether a deeper architecture necessarily produces better results.
 
 ## Approach
 
@@ -52,10 +60,6 @@ The selected model correctly classified **19 out of 20 images** in the held-out 
 The model correctly classified every cancer image in the test set but incorrectly classified one non-cancer image as cancerous.
 
 ### Architecture Comparison
-
-| Model | Best validation accuracy | Held-out test accuracy |
-| ResNet18 | Pending | Add if evaluated |
-| ResNet50 | Pending | Add if evaluated |
 
 Although the selected model achieved high test accuracy, the small sample size makes it difficult to draw strong conclusions. With only 20 test images, a single incorrect prediction changes the overall accuracy by five percentage points.
 
