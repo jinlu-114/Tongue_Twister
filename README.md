@@ -1,50 +1,116 @@
-# Tongue Twister 🧠
+# Tongue Twister
 
-**Exploring oral cancer image classification with transfer learning**
+*Exploring oral cancer image classification with deep learning*
 
-An introductory PyTorch project comparing pretrained ResNet18 and ResNet50 on the public Kaggle **Oral Cancer (Lips and Tongue) Images** dataset. The aim is to learn how dataset preparation, model choice, and evaluation design affect reported performance—not to build a diagnostic system.
+## Overview
 
-## Research question
+Tongue Twister is a personal machine learning project exploring how convolutional neural networks can classify oral cancer images using transfer learning.
 
-Does a larger pretrained CNN necessarily perform better on a small oral-image dataset?
+What started as an experiment in image classification eventually became an opportunity to learn about something equally important: how to determine whether a model's results are actually meaningful.
+
+**Disclaimer:** This is an educational project, not a clinically validated diagnostic tool. Its predictions should not be used for medical decisions!!!
+
+## Research Question
+
+How does model architecture affect oral cancer image classification performance when training data is limited?
+
+I compared two pretrained convolutional neural networks, ResNet18 and ResNet50, to investigate whether a deeper architecture necessarily produces better results.
 
 ## Approach
 
-- Inspect class counts and example images.
-- Create reproducible, stratified 70/15/15 train/validation/test image-level splits.
-- Apply random augmentation only to training images.
-- Train the classification heads of frozen ResNet18 and ResNet50 models for 10 epochs.
-- Compare validation accuracy and learning curves; select a model using validation only.
-- Evaluate the selected model once on the held-out test split, including class-specific metrics and a confusion matrix.
-- Inspect incorrect predictions and document limitations.
+### Dataset
 
-## Run
+I used the publicly available [Oral Cancer (Lips and Tongue) Images](https://www.kaggle.com/datasets/shivam17299/oral-cancer-lips-and-tongue-images) dataset, containing 131 images organized into cancer and non-cancer categories.
 
-Open `Tongue_Twister_Improved.ipynb` in Google Colab, optionally select a GPU, and run cells in order. The notebook downloads the dataset with `kagglehub`. Dependencies are listed in `requirements.txt`. Model weights and figures are generated only after running the notebook.
+The images were divided into training, validation, and held-out test sets using a stratified split.
+
+### Model Training
+
+I implemented the classification pipeline using PyTorch and torchvision.
+
+Both ResNet18 and ResNet50 were initialized with pretrained ImageNet weights. I froze their feature extraction layers and replaced their final classification layers to perform binary classification.
+
+The training pipeline included image preprocessing, data augmentation for training images, validation after each epoch, and checkpoint saving.
+
+### Evaluation
+
+I evaluated model performance using accuracy, balanced accuracy, precision, recall, F1-score, ROC-AUC, and a confusion matrix.
+
+I was particularly interested in class-specific recall because overall accuracy alone can hide important classification errors.
 
 ## Results
-ResNet18 vs. ResNet50 Comparison
 
-I compared ResNet18 and ResNet50 to investigate whether a deeper architecture improves classification performance on a relatively small oral cancer image dataset. Both models used pretrained ImageNet weights, with their feature extraction layers frozen and their classification heads retrained.
+The selected model correctly classified **19 out of 20 images** in the held-out test set.
 
-I initially expected ResNet50 to perform better because of its greater representational capacity. However, ResNet18 requires fewer computational resources, making it potentially more practical if both models achieve similar accuracy.
+| Metric | Result |
+| Test accuracy | 95.0% |
+| Balanced accuracy | 91.7% |
+| ROC-AUC | 0.94 |
+| Cancer recall | 100% (14/14) |
+| Non-cancer recall | 83.3% (5/6) |
 
-The comparison focuses on validation accuracy and training behaviour rather than model size alone. With only 131 images, small differences in accuracy may reflect the particular dataset split rather than a meaningful advantage of one architecture.
+The model correctly classified every cancer image in the test set but incorrectly classified one non-cancer image as cancerous.
 
-My goal was to determine whether the additional complexity of ResNet50 was justified by a measurable improvement in classification performance.
+### Architecture Comparison
+
+| Model | Best validation accuracy | Held-out test accuracy |
+| ResNet18 | Pending | Add if evaluated |
+| ResNet50 | Pending | Add if evaluated |
+
+Although the selected model achieved high test accuracy, the small sample size makes it difficult to draw strong conclusions. With only 20 test images, a single incorrect prediction changes the overall accuracy by five percentage points.
+
+## Project History
+
+My first implementation used a pretrained ResNet50 model and achieved 92.59% validation accuracy on 27 images.
+
+At first, I was excited by the result. However, when I reviewed the evaluation pipeline, I realized there were several weaknesses in my approach. The validation images were receiving random augmentations, and I hadn't reserved a separate test set.
+
+I had spent more time thinking about how to improve the model than how to evaluate it properly.
+
+That realization motivated me to revisit the project. I separated the training and validation transformations, introduced a held-out test set, and expanded the experiment to compare ResNet18 and ResNet50.
+
+Revisiting my original implementation helped me understand that developing a machine learning model isn't just about achieving the highest possible accuracy. It's also about questioning how that accuracy was obtained.
 
 ## Limitations
 
-The dataset is small, and image-level splits do not guarantee independence between patients or near-duplicate images. The test set contains only around 20 images, so estimates are unstable. The public images are not MRI scans, and the model is not clinically validated. No medical decisions should be based on its outputs.
+There are several important limitations to this experiment:
 
-## Project history
+- **Small dataset:** With only 131 images, performance estimates are highly sensitive to individual predictions and the choice of data split.
+- **Potential data leakage:** Without patient identifiers or a thorough duplicate-image investigation, related images could appear across different subsets.
+- **Limited generalizability:** The dataset may not represent the diversity of patients, lesions, or imaging conditions encountered in clinical settings.
+- **Transfer learning:** The pretrained feature extractors were frozen, so this experiment does not investigate full-network fine-tuning.
+- **No external validation:** The held-out test set comes from the same dataset, not an independent clinical source.
 
-An initial ResNet50-only exploration reported 92.59% validation accuracy on 27 images, but its validation pipeline applied random augmentations and lacked an independent test set. This revision addresses those methodological weaknesses and adds a controlled architecture comparison. The original score should not be compared directly with the revised results.
+These limitations mean that the reported results should be interpreted as experimental findings rather than evidence of diagnostic reliability.
 
-## Next investigations
+## What I Learned
 
-Evaluate repeated random seeds, check for duplicates and patient-level overlap, compare against a simple baseline, and explore external validation.
+This was my first substantial attempt at building an image classification model with PyTorch.
+
+Beyond learning how to implement transfer learning, I became more comfortable with preparing image datasets, training neural networks, saving checkpoints, and interpreting classification metrics.
+
+The most valuable part of the project was recognizing weaknesses in my first approach and having to rethink my methodology.
+
+I also learned that a more complex model isn't automatically a better one. Comparing ResNet18 and ResNet50 gave me a reason to consider computational efficiency alongside predictive performance.
+
+## Next Investigations
+
+If I continue developing Tongue Twister, I'd like to:
+
+1. Repeat training with different random seeds to investigate performance variability.
+2. Compare the neural networks against a simpler classification baseline.
+3. Investigate duplicate images and introduce patient-level splitting if identifiers become available.
+4. Evaluate performance using a larger, independent dataset.
+5. Explore MRI-based tongue tumour classification as a separate project using an appropriate imaging dataset.
+
+## Running the Project
+
+The Jupyter notebook contains the data preparation, training, and evaluation pipeline.
+
+Install the required dependencies using the project's `requirements.txt` file, then run the notebook cells in order. The dataset is obtained through KaggleHub.
+
+Saved `.pth` checkpoints can be loaded with the corresponding model architecture to reproduce predictions without retraining.
 
 ## Acknowledgments
 
-Uses public Kaggle data, torchvision pretrained weights, and PyTorch.
+This project uses publicly available images from the *Oral Cancer (Lips and Tongue) Images* dataset and pretrained ResNet architectures provided through torchvision.
