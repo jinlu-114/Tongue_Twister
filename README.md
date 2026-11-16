@@ -1,4 +1,4 @@
-# Tongue Twister
+# Tongue Twister 👅
 
 *Exploring oral cancer image classification with deep learning*
 
